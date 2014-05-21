@@ -4,26 +4,44 @@ import java.util.Random;
 
 import javax.swing.*;
 
-public class Board extends JPanel {
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class Board extends JPanel implements KeyListener {
 	private final int SIZE;
 	public int[][] array;
-	private ImageIcon[][] images;
+	private JLabel[][] labels;
 	private int free; //the amount of tiles that are free
 	private int score;
+	private JTable table;
 	/**
 	 * Create the panel.
 	 */
 	public Board(int size) {
+		super();
 		SIZE =size;
+		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
+		addKeyListener(this);
+	
+		
+		
 		free = SIZE * SIZE;
 		array=new int[SIZE][SIZE];
 		score=0;
 		//int[][]arr ={{0,2,2,4},{2,2,0,4},{2,4,0,2},{0,4,2,2}};
 		//array =arr;
 		//free=4;
+		
+		
 		createTile();
 		createTile();
-	
+		
+		
+	toGUI();
+	//this.setBackground(Color.BLACK);
+	this.setVisible(true);
 			
 		}
 	
@@ -232,5 +250,73 @@ public class Board extends JPanel {
 		if(moved)
 			createTile();
 		return moved;
+	}
+
+	private void toGUI() {
+		//images=new ImageIcon[SIZE];
+		removeAll();
+		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
+		ImageIcon image;
+		labels =new JLabel[SIZE][SIZE];
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				if(array[i][j]!=0){
+				image =new ImageIcon("/Users/omerhai/Documents/eclipse java projects/2048/src/tile"+array[i][j]+".png");
+				labels[i][j]=new JLabel(image);
+				}
+				else {
+					labels[i][j]=new JLabel();
+				}
+				labels[i][j].setBorder(BorderFactory.createLineBorder(Color.black,2));
+				this.add(labels[i][j]);
+				
+				
+			}
+		}
+		
+		this.revalidate();
+		repaint();
+	
+	}
+
+	
+	
+	
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_UP:
+			moveUp();
+			break;
+		case KeyEvent.VK_DOWN:
+			moveDown();
+			break;
+		case KeyEvent.VK_LEFT:
+		moveLeft();
+		break;
+		case KeyEvent.VK_RIGHT:
+			moveRight();
+			break;
+		default:
+			break;
+		}
+		
+		toGUI();
+		
 	}
 }
