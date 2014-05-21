@@ -125,6 +125,9 @@ public class Game extends JFrame implements ActionListener {
 		//Multi Mode
 		if(e.getSource() instanceof JToggleButton){
 			JToggleButton multi=(JToggleButton)(e.getSource());
+			
+			restart();
+			
 			if(multi.isSelected())
 				multiMode=true;
 			else 
@@ -192,5 +195,29 @@ public class Game extends JFrame implements ActionListener {
 //	}
 	}
 
+	
+	private void restart(){
+		this.removeKeyListener((KeyListener)gridPanel);
+		gridPanel.removeAll();
+		this.contentPane.remove(gridPanel);
+		gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+		addKeyListener((KeyListener)gridPanel);
+		((TopBar)topPanel).lblScore.setText("score: 0");
+		//((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
+		this.add(gridPanel,BorderLayout.CENTER);
+		
+		if(secGridPanel instanceof JPanel){
+			this.removeKeyListener((KeyListener)secGridPanel);
+			secGridPanel.removeAll();
+			this.contentPane.remove(secGridPanel);
+			secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+			addKeyListener((KeyListener)secGridPanel);
+			this.add(secGridPanel,BorderLayout.WEST);
+		}
+		
+		this.contentPane.revalidate();
+		this.contentPane.repaint();
+	}
+	
 
 }
