@@ -3,6 +3,9 @@ package game;
 import java.util.Random;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+import org.w3c.dom.css.RGBColor;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -15,6 +18,8 @@ public class Board extends JPanel implements KeyListener {
 	private JLabel[][] labels;
 	private int free; //the amount of tiles that are free
 	private int score;
+	private boolean win=false;
+	private boolean won=false;
 	private JTable table;
 	/**
 	 * Create the panel.
@@ -23,7 +28,8 @@ public class Board extends JPanel implements KeyListener {
 		super();
 		SIZE =size;
 		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
-		addKeyListener(this);
+		
+		//addKeyListener(this);
 	
 		
 		
@@ -37,13 +43,16 @@ public class Board extends JPanel implements KeyListener {
 		
 		createTile();
 		createTile();
-		
-		
+		this.setBorder(new EmptyBorder(10, 10, 10, 10) );
 	toGUI();
-	//this.setBackground(Color.BLACK);
+	this.setBackground(Color.getHSBColor((float)0.08, (float)0.17, (float)0.55));
 	this.setVisible(true);
 			
 		}
+	public int GetScore(){
+		return score;
+	}
+	
 	
 	
 	private int randomTile(){
@@ -107,6 +116,8 @@ public class Board extends JPanel implements KeyListener {
 						rIndex--;
 						i--;
 						moved = true;
+						
+						
 					} 
 				//--------------------------------------
 					if(i==-1 || i==0)
@@ -116,6 +127,8 @@ public class Board extends JPanel implements KeyListener {
 					if(array[i][j]==array[i-1][j]&&!(isMerged[i-1]))//if they are equal and can be merged
 					{
 						array[i-1][j]*=2;
+						if(array[i-1][j]==2048)
+							win=true;
 						array[i][j]=0;
 						free++;
 						isMerged[i-1]=true;
@@ -126,6 +139,8 @@ public class Board extends JPanel implements KeyListener {
 			
 				}
 			}
+			
+			
 		}
 		if(moved)
 			createTile();
@@ -156,6 +171,8 @@ public class Board extends JPanel implements KeyListener {
 					if(array[i][j]==array[i+1][j]&&!(isMerged[i+1]))//if they are equal and can be merged
 					{
 						array[i+1][j]*=2;
+						if(array[i+1][j]==2048)
+							win=true;
 						array[i][j]=0;
 						free++;
 						isMerged[i+1]=true;
@@ -196,6 +213,8 @@ public class Board extends JPanel implements KeyListener {
 					if(array[i][j]==array[i][j+1]&&!(isMerged[j+1]))//if they are equal and can be merged
 					{
 						array[i][j+1]*=2;
+						if(array[i][j+1]==2048)
+							win=true;
 						array[i][j]=0;
 						free++;
 						isMerged[j+1]=true;
@@ -236,6 +255,8 @@ public class Board extends JPanel implements KeyListener {
 					if(array[i][j]==array[i][j-1]&&!(isMerged[j-1]))//if they are equal and can be merged
 					{
 						array[i][j-1]*=2;
+						if(array[i][j-1]==2048)
+							win=true;
 						array[i][j]=0;
 						free++;
 						isMerged[j-1]=true;
@@ -256,24 +277,24 @@ public class Board extends JPanel implements KeyListener {
 		//images=new ImageIcon[SIZE];
 		removeAll();
 		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
+		
 		ImageIcon image;
 		labels =new JLabel[SIZE][SIZE];
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
-				if(array[i][j]!=0){
-				image =new ImageIcon("/Users/omerhai/Documents/eclipse java projects/2048/src/tile"+array[i][j]+".png");
+				//if(array[i][j]!=0){
+				image =new ImageIcon("./src/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
-				}
-				else {
-					labels[i][j]=new JLabel();
-				}
-				labels[i][j].setBorder(BorderFactory.createLineBorder(Color.black,2));
+				//}
+			//	else {
+			//		labels[i][j]=new JLabel();
+			//	}
+				//labels[i][j].setBorder(BorderFactory.createLineBorder(Color.black,2));
 				this.add(labels[i][j]);
 				
 				
 			}
 		}
-		
 		this.revalidate();
 		repaint();
 	
@@ -299,24 +320,51 @@ public class Board extends JPanel implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		boolean flag=false;
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
 			moveUp();
+			flag=true;
 			break;
 		case KeyEvent.VK_DOWN:
 			moveDown();
+			flag=true;
 			break;
 		case KeyEvent.VK_LEFT:
 		moveLeft();
+		flag=true;
 		break;
 		case KeyEvent.VK_RIGHT:
 			moveRight();
+			flag=true;
 			break;
 		default:
 			break;
 		}
+		TopBar.lblScore.setText("score: "+score);
 		
 		toGUI();
-		
+		if(flag)
+			checkEndGame();
+	
+	}
+	private void checkEndGame(){
+		gameOver();
+		win();
+	}
+	private void gameOver(){
+		if(free==0){
+			int[][]checkMoves=array.clone();
+			if(!(moveUp()||moveDown()||moveLeft()||moveRight())){
+				JOptionPane.showMessageDialog(this, "Game Over");
+			}
+		}
+	}
+	private void win(){
+		if(win&&!won){
+			won=true;
+			JOptionPane.showMessageDialog(this, "Congratulations! You Have Won The Game!");
+		}
+
 	}
 }
