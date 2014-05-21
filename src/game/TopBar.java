@@ -17,6 +17,7 @@ public class TopBar extends JPanel{
 	 private JButton restart;
 	 private JComboBox comboBox;
 	 private JToggleButton tglMulti;
+	 private JComboBox comboBox_type;
 	/**
 	 * Create the panel.
 	 */
@@ -42,6 +43,13 @@ public class TopBar extends JPanel{
 		restart.setFocusable(false);
 		//restart.setPreferredSize(new Dimension(50, 50));
 		this.add(restart);
+		
+		comboBox_type = new JComboBox();
+		comboBox_type.setModel(new DefaultComboBoxModel(new String[] {"Clasic", "Chad Gadya!!!", "Other"}));
+		comboBox_type.setFocusable(false);
+		add(comboBox_type);
+		
+	
 
 	}
 public JButton getRestart(){

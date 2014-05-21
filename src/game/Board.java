@@ -283,7 +283,7 @@ public class Board extends JPanel implements KeyListener {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				//if(array[i][j]!=0){
-				image =new ImageIcon("./src/tile"+array[i][j]+".png");
+				image =new ImageIcon("./src/"+"ChadGad" +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
 				//}
 			//	else {
