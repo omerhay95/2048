@@ -4,34 +4,34 @@ public class tester {
 
 	public static void main(String[] args) {
 		Board board=new Board(4);
-		print(board.array);
-		System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();System.out.println();
-		System.out.println(board.moveLeft());
-		print(board.array);System.out.println();
+//		print(board.array);
+//		System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();System.out.println();
+//		System.out.println(board.moveLeft());
+//		print(board.array);System.out.println();
 		
 	}
 	public static void print(int[][]array) {

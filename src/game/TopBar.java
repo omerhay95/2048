@@ -24,7 +24,7 @@ public class TopBar extends JPanel{
 	public TopBar() {
 		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		tglMulti = new JToggleButton("Multi");
+		tglMulti = new JToggleButton("Dual");
 		tglMulti.setFocusable(false);
 		add(tglMulti);
 		
@@ -45,7 +45,7 @@ public class TopBar extends JPanel{
 		this.add(restart);
 		
 		comboBox_type = new JComboBox();
-		comboBox_type.setModel(new DefaultComboBoxModel(new String[] {"Clasic", "Chad Gadya!!!", "Other"}));
+		comboBox_type.setModel(new DefaultComboBoxModel(new String[] {"Classic", "Chad Gadya!!!", "Other"}));
 		comboBox_type.setFocusable(false);
 		add(comboBox_type);
 		

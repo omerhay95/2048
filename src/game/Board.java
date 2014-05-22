@@ -36,13 +36,13 @@ public class Board extends JPanel implements KeyListener {
 		free = SIZE * SIZE;
 		array=new int[SIZE][SIZE];
 		score=0;
-		//int[][]arr ={{0,2,2,4},{2,2,0,4},{2,4,0,2},{0,4,2,2}};
-		//array =arr;
-		//free=4;
+		int[][]arr ={{8,2,8,4},{2,8,16,4},{2,4,8,2},{4,8,2,8}};
+		array =arr;
+		free=0;
 		
 		
-		createTile();
-		createTile();
+		//createTile();
+		//createTile();
 		this.setBorder(new EmptyBorder(10, 10, 10, 10) );
 	toGUI();
 	this.setBackground(Color.getHSBColor((float)0.08, (float)0.17, (float)0.55));
@@ -91,28 +91,28 @@ public class Board extends JPanel implements KeyListener {
 		
 	}
 	
-	private void createTile() {
+	private void createTile(int[][]m) {
 		int index = randomTile();
 		int i = getRow(index);
 		int j = getCol(index);
 		
-		array[i][j] = randomValue();
+		m[i][j] = randomValue();
 		//update images here
 		free--;
 	}
 
-	public boolean moveUp() {
+	public boolean moveUp(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int j = 0; j < SIZE; j++) {
 			isMerged =new boolean[SIZE];
 			for (int i = 1; i < SIZE; i++) {
-				if(array[i][j]!=0){
+				if(arr[i][j]!=0){
 				//This moves the tiles up
 					int rIndex=i-1;
-					while (rIndex >=0 && array[rIndex][j]==0){ // as long we are within the limit and the upper tile is empty
-						array[rIndex][j]=array[rIndex + 1][j];
-						array[rIndex + 1][j]=0;
+					while (rIndex >=0 && arr[rIndex][j]==0){ // as long we are within the limit and the upper tile is empty
+						arr[rIndex][j]=arr[rIndex + 1][j];
+						arr[rIndex + 1][j]=0;
 						rIndex--;
 						i--;
 						moved = true;
@@ -122,18 +122,18 @@ public class Board extends JPanel implements KeyListener {
 				//--------------------------------------
 					if(i==-1 || i==0)
 						i++;
-				if(array[i-1][j]!=0) //if the tile above is not empty
+				if(arr[i-1][j]!=0) //if the tile above is not empty
 				{
-					if(array[i][j]==array[i-1][j]&&!(isMerged[i-1]))//if they are equal and can be merged
+					if(arr[i][j]==arr[i-1][j]&&!(isMerged[i-1]))//if they are equal and can be merged
 					{
-						array[i-1][j]*=2;
-						if(array[i-1][j]==2048)
+						arr[i-1][j]*=2;
+						if(arr[i-1][j]==2048)
 							win=true;
-						array[i][j]=0;
+						arr[i][j]=0;
 						free++;
 						isMerged[i-1]=true;
 						moved =true;
-						score+=array[i-1][j];
+						score+=arr[i-1][j];
 					}
 				}
 			
@@ -143,22 +143,22 @@ public class Board extends JPanel implements KeyListener {
 			
 		}
 		if(moved)
-			createTile();
+			createTile(arr);
 		return moved;
 	}
 	
-	public boolean moveDown() {
+	public boolean moveDown(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int j = 0; j < SIZE; j++) {
 			isMerged =new boolean[SIZE];
 			for (int i = SIZE - 2; i >= 0; i--) {
-				if(array[i][j]!=0){
+				if(arr[i][j]!=0){
 				//This moves the tiles down
 					int rIndex=i+1;
-					while (rIndex <= SIZE - 1 && array[rIndex][j]==0){ // as long we are within the limit and the lower tile is empty
-						array[rIndex][j]=array[rIndex - 1][j];
-						array[rIndex - 1][j]=0;
+					while (rIndex <= SIZE - 1 && arr[rIndex][j]==0){ // as long we are within the limit and the lower tile is empty
+						arr[rIndex][j]=arr[rIndex - 1][j];
+						arr[rIndex - 1][j]=0;
 						rIndex++;
 						i++;
 						moved = true;
@@ -166,18 +166,18 @@ public class Board extends JPanel implements KeyListener {
 				//--------------------------------------
 					if(i==SIZE || i==SIZE-1)
 						i--;
-				if(array[i+1][j]!=0) //if the tile below is not empty
+				if(arr[i+1][j]!=0) //if the tile below is not empty
 				{
-					if(array[i][j]==array[i+1][j]&&!(isMerged[i+1]))//if they are equal and can be merged
+					if(arr[i][j]==arr[i+1][j]&&!(isMerged[i+1]))//if they are equal and can be merged
 					{
-						array[i+1][j]*=2;
-						if(array[i+1][j]==2048)
+						arr[i+1][j]*=2;
+						if(arr[i+1][j]==2048)
 							win=true;
-						array[i][j]=0;
+						arr[i][j]=0;
 						free++;
 						isMerged[i+1]=true;
 						moved =true;
-						score+=array[i+1][j];
+						score+=arr[i+1][j];
 					}
 				}
 			
@@ -185,22 +185,22 @@ public class Board extends JPanel implements KeyListener {
 			}
 		}
 		if(moved)
-			createTile();
+			createTile(arr);
 		return moved;
 	}
 
-	public boolean moveRight() {
+	public boolean moveRight(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int i = 0; i < SIZE; i++) {
 			isMerged =new boolean[SIZE];
 			for (int j = SIZE - 2; j >= 0; j--) {
-				if(array[i][j]!=0){
+				if(arr[i][j]!=0){
 				//This moves the tiles right
 					int cIndex=j+1;
-					while (cIndex <= SIZE - 1 && array[i][cIndex]==0){ // as long we are within the limit and the right tile is empty
-						array[i][cIndex]=array[i][cIndex-1];
-						array[i][cIndex-1]=0;
+					while (cIndex <= SIZE - 1 && arr[i][cIndex]==0){ // as long we are within the limit and the right tile is empty
+						arr[i][cIndex]=arr[i][cIndex-1];
+						arr[i][cIndex-1]=0;
 						cIndex++;
 						j++;
 						moved = true;
@@ -208,18 +208,18 @@ public class Board extends JPanel implements KeyListener {
 				//--------------------------------------
 					if(j==SIZE || j==SIZE-1)
 						j--;
-				if(array[i][j+1]!=0) //if the tile below is not empty
+				if(arr[i][j+1]!=0) //if the tile below is not empty
 				{
-					if(array[i][j]==array[i][j+1]&&!(isMerged[j+1]))//if they are equal and can be merged
+					if(arr[i][j]==arr[i][j+1]&&!(isMerged[j+1]))//if they are equal and can be merged
 					{
-						array[i][j+1]*=2;
-						if(array[i][j+1]==2048)
+						arr[i][j+1]*=2;
+						if(arr[i][j+1]==2048)
 							win=true;
-						array[i][j]=0;
+						arr[i][j]=0;
 						free++;
 						isMerged[j+1]=true;
 						moved =true;
-						score+=array[i][j+1];
+						score+=arr[i][j+1];
 					}
 				}
 			
@@ -227,22 +227,22 @@ public class Board extends JPanel implements KeyListener {
 			}
 		}
 		if(moved)
-			createTile();
+			createTile(arr);
 		return moved;
 	}
 
-	public boolean moveLeft() {
+	public boolean moveLeft(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int i = 0; i < SIZE; i++) {
 			isMerged =new boolean[SIZE];
 			for (int j = 1; j < SIZE; j++) {
-				if(array[i][j]!=0){
+				if(arr[i][j]!=0){
 				//This moves the tiles right
 					int cIndex=j-1;
-					while (cIndex >= 0 && array[i][cIndex]==0){ // as long we are within the limit and the left tile is empty
-						array[i][cIndex]=array[i][cIndex+1];
-						array[i][cIndex+1]=0;
+					while (cIndex >= 0 && arr[i][cIndex]==0){ // as long we are within the limit and the left tile is empty
+						arr[i][cIndex]=arr[i][cIndex+1];
+						arr[i][cIndex+1]=0;
 						cIndex--;
 						j--;
 						moved = true;
@@ -250,18 +250,18 @@ public class Board extends JPanel implements KeyListener {
 				//--------------------------------------
 					if(j==-1 || j==0)
 						j++;
-				if(array[i][j-1]!=0) //if the tile below is not empty
+				if(arr[i][j-1]!=0) //if the tile below is not empty
 				{
-					if(array[i][j]==array[i][j-1]&&!(isMerged[j-1]))//if they are equal and can be merged
+					if(arr[i][j]==arr[i][j-1]&&!(isMerged[j-1]))//if they are equal and can be merged
 					{
-						array[i][j-1]*=2;
-						if(array[i][j-1]==2048)
+						arr[i][j-1]*=2;
+						if(arr[i][j-1]==2048)
 							win=true;
-						array[i][j]=0;
+						arr[i][j]=0;
 						free++;
 						isMerged[j-1]=true;
 						moved =true;
-						score+=array[i][j-1];
+						score+=arr[i][j-1];
 					}
 				}
 			
@@ -269,7 +269,7 @@ public class Board extends JPanel implements KeyListener {
 			}
 		}
 		if(moved)
-			createTile();
+			createTile(arr);
 		return moved;
 	}
 
@@ -283,7 +283,7 @@ public class Board extends JPanel implements KeyListener {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				//if(array[i][j]!=0){
-				image =new ImageIcon("./src/"+"ChadGad" +"/tile"+array[i][j]+".png");
+				image =new ImageIcon("./src/"+"numbers" +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
 				//}
 			//	else {
@@ -323,19 +323,19 @@ public class Board extends JPanel implements KeyListener {
 		boolean flag=false;
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
-			moveUp();
+			moveUp(array);
 			flag=true;
 			break;
 		case KeyEvent.VK_DOWN:
-			moveDown();
+			moveDown(array);
 			flag=true;
 			break;
 		case KeyEvent.VK_LEFT:
-		moveLeft();
+		moveLeft(array);
 		flag=true;
 		break;
 		case KeyEvent.VK_RIGHT:
-			moveRight();
+			moveRight(array);
 			flag=true;
 			break;
 		default:
@@ -354,10 +354,16 @@ public class Board extends JPanel implements KeyListener {
 	}
 	private void gameOver(){
 		if(free==0){
-			int[][]checkMoves=array.clone();
-			if(!(moveUp()||moveDown()||moveLeft()||moveRight())){
+			System.out.println("real:");
+			tester.print(array);
+			int[][]checkMoves=deepCopyMat(array);//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+			if(!(moveUp(checkMoves)||moveDown(checkMoves)||moveLeft(checkMoves)||moveRight(checkMoves))){
 				JOptionPane.showMessageDialog(this, "Game Over");
 			}
+			System.out.println("real:");
+			tester.print(array);
+			System.out.println("temp:");
+			tester.print(checkMoves);
 		}
 	}
 	private void win(){
@@ -366,5 +372,17 @@ public class Board extends JPanel implements KeyListener {
 			JOptionPane.showMessageDialog(this, "Congratulations! You Have Won The Game!");
 		}
 
+	}
+	private int[][] deepCopyMat(int[][]m){
+		int[][]res=new int[SIZE][SIZE];
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				res[i][j]=m[i][j];
+			}
+		}
+//		for (int i = 0; i < SIZE; i++) {
+//			res[i]=m[i].clone();
+//		}
+		return res;
 	}
 }
