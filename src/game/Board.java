@@ -23,6 +23,7 @@ public class Board extends JPanel implements KeyListener {
 	private int score;
 	private boolean win=false;
 	private boolean won=false;
+	private boolean gameOver=false;
 	private JTable table;
 	int tilesSkin;
 	String[]skins;
@@ -336,6 +337,7 @@ public class Board extends JPanel implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		boolean flag=false;
 		boolean moved=false;
+		if(!gameOver){
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
 			moved=moveUp(array);
@@ -359,11 +361,11 @@ public class Board extends JPanel implements KeyListener {
 		if(moved)
 			createTile(array);
 		TopBar.lblScore.setText("score: "+score);
-		TopBar.lblScore.setText("target: "+Math.pow(2, SIZE+7));
+		TopBar.lblTarget.setText("target: "+Math.pow(2, SIZE+7));
 		toGUI();
 		if(flag)
 			checkEndGame();
-	
+		}
 	}
 	private void checkEndGame(){
 		gameOver();
@@ -375,6 +377,7 @@ public class Board extends JPanel implements KeyListener {
 			int rfree=free;
 			int[][]checkMoves=deepCopyMat(array);
 			if(!(moveUp(checkMoves)||moveDown(checkMoves)||moveLeft(checkMoves)||moveRight(checkMoves))){
+				gameOver=true;
 				JOptionPane.showMessageDialog(this, "Game Over");
 			}
 			score=rscore;

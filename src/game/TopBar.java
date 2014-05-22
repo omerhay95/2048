@@ -3,13 +3,16 @@ package game;
 import javax.swing.*;
 
 import java.awt.AlphaComposite;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.io.ObjectInputStream.GetField;
 
 public class TopBar extends JPanel{
 
@@ -18,15 +21,24 @@ public class TopBar extends JPanel{
 	 private JComboBox comboBox_grid;
 	 private JToggleButton tglMulti;
 	 private JComboBox comboBox_skin;
+	 private JButton btnHighscores;
+	 private JPanel panel;
+	 private JPanel panelCenter;
+	 public static JLabel lblTarget;
 	/**
 	 * Create the panel.
 	 */
 	public TopBar() {
-		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
+		//setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		setLayout(new BorderLayout());
+		panel = new JPanel();
+		add(panel, BorderLayout.NORTH);
+		panelCenter = new JPanel();
+		add(panelCenter, BorderLayout.CENTER);
+	
 		tglMulti = new JToggleButton("Dual");
 		tglMulti.setFocusable(false);
-		add(tglMulti);
+		panelCenter.add(tglMulti);
 		
 		comboBox_grid = new JComboBox();
 		comboBox_grid.addItem(3);
@@ -37,22 +49,34 @@ public class TopBar extends JPanel{
 		comboBox_grid.setSelectedIndex(1);
 		comboBox_grid.setFocusable(false);
 		comboBox_grid.setName("comboBox_grid");
-		add(comboBox_grid);
+		panelCenter.add(comboBox_grid);
+		
+		lblTarget = new JLabel("target");
+		panel.add(lblTarget);
 		lblScore=new JLabel("score: 0");
-		this.add(lblScore);
+		panel.add(lblScore);
 		restart=new JButton("Restart");
 		restart.setFocusable(false);
 		//restart.setPreferredSize(new Dimension(50, 50));
-		this.add(restart);
+		panelCenter.add(restart);
 		
 		comboBox_skin = new JComboBox();
 		comboBox_skin.setName("comboBox_skin");
 		comboBox_skin.setModel(new DefaultComboBoxModel(new String[] {"Classic", "Chad Gadya", "Other"}));
 		comboBox_skin.setFocusable(false);
-		add(comboBox_skin);
+		panelCenter.add(comboBox_skin);
 		
-	
+		btnHighscores = new JButton("Highscores");
+		btnHighscores.setFocusable(false);
+		panel.add(btnHighscores);
+		
 
+	}
+	public JLabel getScore(){
+		return lblScore;
+	}
+	public JLabel getTarget(){
+		return lblTarget;
 	}
 public JButton getRestart(){
 	return restart;

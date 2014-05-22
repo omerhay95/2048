@@ -197,11 +197,6 @@ public class Game extends JFrame implements ActionListener {
 			this.contentPane.remove(secGridPanel);
 			}
 		if(multiMode){
-//			if(grid>4){
-//				JOptionPane.showMessageDialog(this, "Multi Mode is not available for grid size greater than 4");
-//				((TopBar)topPanel).setToggle();
-//			}
-//			else{
 			width*=2;
 			if(grid==3)
 				width+=20;
@@ -212,7 +207,6 @@ public class Game extends JFrame implements ActionListener {
 			contentPane.add(secGridPanel,BorderLayout.WEST);
 		}
 		setBounds(this.getX(),this.getY(),width,height);
-//	}
 	}
 
 	
@@ -233,11 +227,11 @@ public class Game extends JFrame implements ActionListener {
 			secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 			addKeyListener((KeyListener)secGridPanel);
 			this.add(secGridPanel,BorderLayout.WEST);
+			
 		}
 		
 		this.contentPane.revalidate();
 		this.contentPane.repaint();
 	}
 	
-
 }
