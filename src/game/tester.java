@@ -3,7 +3,7 @@ package game;
 public class tester {
 
 	public static void main(String[] args) {
-		Board board=new Board(4);
+//		Board board=new Board(4);
 //		print(board.array);
 //		System.out.println();
 //		System.out.println(board.moveLeft());

@@ -13,6 +13,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class Board extends JPanel implements KeyListener {
+	/**
+	 * 
+	 */
 	private final int SIZE;
 	public int[][] array;
 	private JLabel[][] labels;
@@ -21,28 +24,34 @@ public class Board extends JPanel implements KeyListener {
 	private boolean win=false;
 	private boolean won=false;
 	private JTable table;
+	int tilesSkin;
+	String[]skins;
 	/**
 	 * Create the panel.
 	 */
-	public Board(int size) {
+	public Board(int size,int skin) {
 		super();
 		SIZE =size;
 		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
 		
 		//addKeyListener(this);
-	
+		skins=new String[3];
+		skins[0]="Classic";
+		skins[1]="Chad Gadya";
+		skins[2]="Other";
+		tilesSkin=skin;
 		
 		
 		free = SIZE * SIZE;
 		array=new int[SIZE][SIZE];
 		score=0;
-		int[][]arr ={{8,2,8,4},{2,8,16,4},{2,4,8,2},{4,8,2,8}};
-		array =arr;
-		free=0;
+		//int[][]arr ={{8,2,8,4},{2,8,16,4},{2,4,8,2},{4,8,2,8}};
+		//array =arr;
+		//free=0;
 		
 		
-		//createTile();
-		//createTile();
+		createTile(array);
+		createTile(array);
 		this.setBorder(new EmptyBorder(10, 10, 10, 10) );
 	toGUI();
 	this.setBackground(Color.getHSBColor((float)0.08, (float)0.17, (float)0.55));
@@ -52,7 +61,12 @@ public class Board extends JPanel implements KeyListener {
 	public int GetScore(){
 		return score;
 	}
-	
+	public void setSkin(int newSkin){
+		if(newSkin<skins.length){
+			tilesSkin=newSkin;
+			toGUI();
+		}
+	}
 	
 	
 	private int randomTile(){
@@ -127,7 +141,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i-1][j]&&!(isMerged[i-1]))//if they are equal and can be merged
 					{
 						arr[i-1][j]*=2;
-						if(arr[i-1][j]==2048)
+						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -142,8 +156,8 @@ public class Board extends JPanel implements KeyListener {
 			
 			
 		}
-		if(moved)
-			createTile(arr);
+		//if(moved)
+		//	createTile(arr);
 		return moved;
 	}
 	
@@ -171,7 +185,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i+1][j]&&!(isMerged[i+1]))//if they are equal and can be merged
 					{
 						arr[i+1][j]*=2;
-						if(arr[i+1][j]==2048)
+						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -184,8 +198,8 @@ public class Board extends JPanel implements KeyListener {
 				}
 			}
 		}
-		if(moved)
-			createTile(arr);
+	//	if(moved)
+	//		createTile(arr);
 		return moved;
 	}
 
@@ -213,7 +227,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i][j+1]&&!(isMerged[j+1]))//if they are equal and can be merged
 					{
 						arr[i][j+1]*=2;
-						if(arr[i][j+1]==2048)
+						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -226,8 +240,8 @@ public class Board extends JPanel implements KeyListener {
 				}
 			}
 		}
-		if(moved)
-			createTile(arr);
+	//	if(moved)
+	//		createTile(arr);
 		return moved;
 	}
 
@@ -255,7 +269,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i][j-1]&&!(isMerged[j-1]))//if they are equal and can be merged
 					{
 						arr[i][j-1]*=2;
-						if(arr[i][j-1]==2048)
+						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -268,8 +282,8 @@ public class Board extends JPanel implements KeyListener {
 				}
 			}
 		}
-		if(moved)
-			createTile(arr);
+	//	if(moved)
+	//		createTile(arr);
 		return moved;
 	}
 
@@ -283,7 +297,7 @@ public class Board extends JPanel implements KeyListener {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				//if(array[i][j]!=0){
-				image =new ImageIcon("./src/"+"numbers" +"/tile"+array[i][j]+".png");
+				image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
 				//}
 			//	else {
@@ -321,28 +335,31 @@ public class Board extends JPanel implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		boolean flag=false;
+		boolean moved=false;
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
-			moveUp(array);
+			moved=moveUp(array);
 			flag=true;
 			break;
 		case KeyEvent.VK_DOWN:
-			moveDown(array);
+			moved=moveDown(array);
 			flag=true;
 			break;
 		case KeyEvent.VK_LEFT:
-		moveLeft(array);
+			moved=moveLeft(array);
 		flag=true;
 		break;
 		case KeyEvent.VK_RIGHT:
-			moveRight(array);
+			moved=moveRight(array);
 			flag=true;
 			break;
 		default:
 			break;
 		}
+		if(moved)
+			createTile(array);
 		TopBar.lblScore.setText("score: "+score);
-		
+		TopBar.lblScore.setText("target: "+Math.pow(2, SIZE+7));
 		toGUI();
 		if(flag)
 			checkEndGame();
@@ -354,16 +371,14 @@ public class Board extends JPanel implements KeyListener {
 	}
 	private void gameOver(){
 		if(free==0){
-			System.out.println("real:");
-			tester.print(array);
-			int[][]checkMoves=deepCopyMat(array);//aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+			int rscore=score;
+			int rfree=free;
+			int[][]checkMoves=deepCopyMat(array);
 			if(!(moveUp(checkMoves)||moveDown(checkMoves)||moveLeft(checkMoves)||moveRight(checkMoves))){
 				JOptionPane.showMessageDialog(this, "Game Over");
 			}
-			System.out.println("real:");
-			tester.print(array);
-			System.out.println("temp:");
-			tester.print(checkMoves);
+			score=rscore;
+			free=rfree;
 		}
 	}
 	private void win(){

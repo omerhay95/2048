@@ -54,27 +54,31 @@ public class Game extends JFrame implements ActionListener {
 	public Game() {
 		super("2048");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100,100,580,650);
+		setBounds(250,100,580,650);
 		//setBounds(100,100,402,464);   SIZE 3
 		//setBounds(100,100,626,686);   SIZE 5
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		gridPanel=new Board(4);
-		contentPane.add(gridPanel,BorderLayout.CENTER);
-		addKeyListener((KeyListener)gridPanel);
-		if(multiMode){
-		secGridPanel=new Board(4);
-		contentPane.add(secGridPanel,BorderLayout.WEST);
-		addKeyListener((KeyListener)secGridPanel);
-		}
 		topPanel=new TopBar();
 		((TopBar)(topPanel)).getRestart().addActionListener(this);
 		((TopBar)(topPanel)).getGridSize().addActionListener(this);
 		((TopBar)(topPanel)).getMultiToggle().addActionListener(this);
+		((TopBar)(topPanel)).getSkinCombo().addActionListener(this);
 		contentPane.add(topPanel,BorderLayout.NORTH);
-		this.setResizable(false);
+		
+		gridPanel=new Board(4,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
+		contentPane.add(gridPanel,BorderLayout.CENTER);
+		addKeyListener((KeyListener)gridPanel);
+		if(multiMode){
+		secGridPanel=new Board(4,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
+		contentPane.add(secGridPanel,BorderLayout.WEST);
+		addKeyListener((KeyListener)secGridPanel);
+		}
+		
+		
+		//this.setResizable(false);
 		this.setVisible(true);
 	}
 
@@ -87,17 +91,17 @@ public class Game extends JFrame implements ActionListener {
 				this.removeKeyListener((KeyListener)gridPanel);
 				gridPanel.removeAll();
 				this.contentPane.remove(gridPanel);
-				gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+				gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 				addKeyListener((KeyListener)gridPanel);
 				((TopBar)topPanel).lblScore.setText("score: 0");
-				//((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
+				((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
 				this.add(gridPanel,BorderLayout.CENTER);
 				
 				if(secGridPanel instanceof JPanel){
 					this.removeKeyListener((KeyListener)secGridPanel);
 					secGridPanel.removeAll();
 					this.contentPane.remove(secGridPanel);
-					secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+					secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 					addKeyListener((KeyListener)secGridPanel);
 					this.add(secGridPanel,BorderLayout.WEST);
 				}
@@ -107,19 +111,35 @@ public class Game extends JFrame implements ActionListener {
 			}
 		}
 		//-------------------
-		//changing grid size
+		
 		if(e.getSource()instanceof JComboBox){
 			JComboBox comboBox=(JComboBox)(e.getSource());
+			//changing grid size
+			if(comboBox.getName()=="comboBox_grid"){
 			this.removeKeyListener((KeyListener)gridPanel);
 			gridPanel.removeAll();
 			this.contentPane.remove(gridPanel);
-			gridPanel=new Board((int)comboBox.getSelectedItem());
+			gridPanel=new Board((int)comboBox.getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 			addKeyListener((KeyListener)gridPanel);
 			((TopBar)topPanel).lblScore.setText("score: 0");
 			this.add(gridPanel);
 			changeSize((int)comboBox.getSelectedItem());
 			this.contentPane.revalidate();
 			this.contentPane.repaint();
+			}//---------------
+			
+			else {
+				//changing skin
+				if (comboBox.getName()=="comboBox_skin") {
+				((Board)gridPanel).setSkin(comboBox.getSelectedIndex());
+				if(secGridPanel instanceof JPanel){
+					((Board)secGridPanel).setSkin(comboBox.getSelectedIndex());
+				}
+				this.contentPane.revalidate();
+				this.contentPane.repaint();
+			}
+				//----------------------
+			}
 		}
 		//--------------------
 		//Multi Mode
@@ -134,7 +154,7 @@ public class Game extends JFrame implements ActionListener {
 				multiMode=false;
 			changeSize((int)((TopBar)topPanel).getGridSize().getSelectedItem());
 		}
-		//--------------
+		//--------------------
 		
 	}
 	
@@ -154,12 +174,12 @@ public class Game extends JFrame implements ActionListener {
 			 height=686; 
 			break;
 		case 6:							//to change
-			width=626;
-			 height=686; 
+			width=765;
+			 height=800; 
 			break;
 		case 7:							//to change
-			width=626;
-			 height=686; 
+			width=850;
+			 height=810; 
 			break;
 		default:
 			break;
@@ -187,11 +207,11 @@ public class Game extends JFrame implements ActionListener {
 				width+=20;
 			if(grid==5)
 				width+=60;
-			secGridPanel=new Board(grid);
+			secGridPanel=new Board(grid,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 			addKeyListener((KeyListener)secGridPanel);
 			contentPane.add(secGridPanel,BorderLayout.WEST);
 		}
-		setBounds(100,100,width,height);
+		setBounds(this.getX(),this.getY(),width,height);
 //	}
 	}
 
@@ -200,7 +220,7 @@ public class Game extends JFrame implements ActionListener {
 		this.removeKeyListener((KeyListener)gridPanel);
 		gridPanel.removeAll();
 		this.contentPane.remove(gridPanel);
-		gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+		gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 		addKeyListener((KeyListener)gridPanel);
 		((TopBar)topPanel).lblScore.setText("score: 0");
 		//((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
@@ -210,7 +230,7 @@ public class Game extends JFrame implements ActionListener {
 			this.removeKeyListener((KeyListener)secGridPanel);
 			secGridPanel.removeAll();
 			this.contentPane.remove(secGridPanel);
-			secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+			secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 			addKeyListener((KeyListener)secGridPanel);
 			this.add(secGridPanel,BorderLayout.WEST);
 		}
