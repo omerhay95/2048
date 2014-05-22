@@ -141,7 +141,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i-1][j]&&!(isMerged[i-1]))//if they are equal and can be merged
 					{
 						arr[i-1][j]*=2;
-						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
+						if(arr[i-1][j]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -185,7 +185,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i+1][j]&&!(isMerged[i+1]))//if they are equal and can be merged
 					{
 						arr[i+1][j]*=2;
-						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
+						if(arr[i+1][j]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
@@ -227,7 +227,7 @@ public class Board extends JPanel implements KeyListener {
 					if(arr[i][j]==arr[i][j+1]&&!(isMerged[j+1]))//if they are equal and can be merged
 					{
 						arr[i][j+1]*=2;
-						if(arr[i][j-1]==(int)(Math.pow(2, SIZE+7)))
+						if(arr[i][j+1]==(int)(Math.pow(2, SIZE+7)))
 							win=true;
 						arr[i][j]=0;
 						free++;
