@@ -25,6 +25,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.IconView;
 import javax.swing.SwingConstants;
 
+import HighScores.HighScoreManager;
+
 public class Game extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
@@ -66,6 +68,7 @@ public class Game extends JFrame implements ActionListener {
 		((TopBar)(topPanel)).getGridSize().addActionListener(this);
 		((TopBar)(topPanel)).getMultiToggle().addActionListener(this);
 		((TopBar)(topPanel)).getSkinCombo().addActionListener(this);
+		((TopBar)(topPanel)).getBtnHighscore().addActionListener(this);
 		contentPane.add(topPanel,BorderLayout.NORTH);
 		
 		gridPanel=new Board(4,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
@@ -80,6 +83,7 @@ public class Game extends JFrame implements ActionListener {
 		
 		//this.setResizable(false);
 		this.setVisible(true);
+	
 	}
 
 	@Override
@@ -88,26 +92,37 @@ public class Game extends JFrame implements ActionListener {
 		if(e.getSource() instanceof JButton){
 			JButton button=(JButton)(e.getSource());
 			if(button.getText()=="Restart"){
-				this.removeKeyListener((KeyListener)gridPanel);
-				gridPanel.removeAll();
-				this.contentPane.remove(gridPanel);
-				gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
-				addKeyListener((KeyListener)gridPanel);
-				((TopBar)topPanel).lblScore.setText("score: 0");
-				((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
-				this.add(gridPanel,BorderLayout.CENTER);
+				restart();
+//				this.removeKeyListener((KeyListener)gridPanel);
+//				gridPanel.removeAll();
+//				this.contentPane.remove(gridPanel);
+//				gridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
+//				addKeyListener((KeyListener)gridPanel);
+//				((TopBar)topPanel).lblScore.setText("score: 0");
+//				((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
+//				this.add(gridPanel,BorderLayout.CENTER);
+//				
+//				if(secGridPanel instanceof JPanel){
+//					this.removeKeyListener((KeyListener)secGridPanel);
+//					secGridPanel.removeAll();
+//					this.contentPane.remove(secGridPanel);
+//					secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
+//					addKeyListener((KeyListener)secGridPanel);
+//					this.add(secGridPanel,BorderLayout.WEST);
+//				}
+//				
+//				this.contentPane.revalidate();
+//				this.contentPane.repaint();
+			}
+			else if(button.getText()=="Highscores")
+			{
+				String curr="";
+				if(((Board)gridPanel).getMult())
+					curr="M";
+				curr+=((Board)gridPanel).getboardSize();
+				HighscoresFrame hf=new HighscoresFrame(curr);
 				
-				if(secGridPanel instanceof JPanel){
-					this.removeKeyListener((KeyListener)secGridPanel);
-					secGridPanel.removeAll();
-					this.contentPane.remove(secGridPanel);
-					secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
-					addKeyListener((KeyListener)secGridPanel);
-					this.add(secGridPanel,BorderLayout.WEST);
-				}
-				
-				this.contentPane.revalidate();
-				this.contentPane.repaint();
+
 			}
 		}
 		//-------------------
@@ -148,10 +163,14 @@ public class Game extends JFrame implements ActionListener {
 			
 			restart();
 			
-			if(multi.isSelected())
+			if(multi.isSelected()){
 				multiMode=true;
+			}
 			else 
 				multiMode=false;
+			((Board)gridPanel).setMulti(multiMode);
+			if(secGridPanel instanceof Board)
+				((Board)secGridPanel).setMulti(multiMode);
 			changeSize((int)((TopBar)topPanel).getGridSize().getSelectedItem());
 		}
 		//--------------------
@@ -211,6 +230,7 @@ public class Game extends JFrame implements ActionListener {
 
 	
 	private void restart(){
+		((Board)gridPanel).setGameOver(false);
 		this.removeKeyListener((KeyListener)gridPanel);
 		gridPanel.removeAll();
 		this.contentPane.remove(gridPanel);
@@ -232,6 +252,7 @@ public class Game extends JFrame implements ActionListener {
 		
 		this.contentPane.revalidate();
 		this.contentPane.repaint();
+
 	}
 	
 }

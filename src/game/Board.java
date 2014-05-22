@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.w3c.dom.css.RGBColor;
 
+import HighScores.HighScoreManager;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
@@ -23,8 +25,8 @@ public class Board extends JPanel implements KeyListener {
 	private int score;
 	private boolean win=false;
 	private boolean won=false;
-	private boolean gameOver=false;
-	private JTable table;
+	private static boolean gameOver=false;
+	private static boolean isMulti=false;
 	int tilesSkin;
 	String[]skins;
 	/**
@@ -59,6 +61,18 @@ public class Board extends JPanel implements KeyListener {
 	this.setVisible(true);
 			
 		}
+	public void setGameOver(boolean isOver){
+		this.gameOver=isOver;
+	}
+	public void setMulti(boolean isMulti){
+		this.isMulti=isMulti;
+	}
+	public boolean getMult(){
+		return isMulti;
+	}
+	public int getboardSize(){
+		return SIZE;
+	}
 	public int GetScore(){
 		return score;
 	}
@@ -378,7 +392,17 @@ public class Board extends JPanel implements KeyListener {
 			int[][]checkMoves=deepCopyMat(array);
 			if(!(moveUp(checkMoves)||moveDown(checkMoves)||moveLeft(checkMoves)||moveRight(checkMoves))){
 				gameOver=true;
-				JOptionPane.showMessageDialog(this, "Game Over");
+			String name=JOptionPane.showInputDialog(this, "Good Game, but its over now. Please enter your name");
+			
+			HighScoreManager hsm;
+			if(isMulti)
+			 hsm=new HighScoreManager("M"+SIZE);
+			else {
+				hsm=new HighScoreManager(""+SIZE);
+			}
+			hsm.addScore(name, rscore);
+			
+			
 			}
 			score=rscore;
 			free=rfree;

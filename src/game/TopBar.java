@@ -72,6 +72,10 @@ public class TopBar extends JPanel{
 		
 
 	}
+	
+	public JButton getBtnHighscore(){
+		return btnHighscores;
+	}
 	public JLabel getScore(){
 		return lblScore;
 	}
