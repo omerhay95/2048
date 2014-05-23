@@ -20,9 +20,13 @@ public class Board extends JPanel implements KeyListener {
 	 */
 	private final int SIZE;
 	public int[][] array;
+	private int [][] lastMove;
 	private JLabel[][] labels;
+	private JLabel[][] lastTiles;
 	private int free; //the amount of tiles that are free
+	private int lastFree;
 	private int score;
+	private int lastScore;
 	private boolean win=false;
 	private boolean won=false;
 	private static boolean gameOver=false;
@@ -41,7 +45,7 @@ public class Board extends JPanel implements KeyListener {
 		skins=new String[3];
 		skins[0]="Classic";
 		skins[1]="Chad Gadya";
-		skins[2]="Other";
+		skins[2]="Make Your Own";
 		tilesSkin=skin;
 		
 		
@@ -55,6 +59,7 @@ public class Board extends JPanel implements KeyListener {
 		
 		createTile(array);
 		createTile(array);
+		updateUndo();
 		this.setBorder(new EmptyBorder(10, 10, 10, 10) );
 	toGUI();
 	this.setBackground(Color.getHSBColor((float)0.08, (float)0.17, (float)0.55));
@@ -81,6 +86,16 @@ public class Board extends JPanel implements KeyListener {
 			tilesSkin=newSkin;
 			toGUI();
 		}
+	}
+	public void Undo(){
+		array=deepCopyMat(lastMove);
+		if(lastTiles!=null)
+			labels=deepCopyLabels(lastTiles);
+		if(labels!=null)
+			toGUI();
+		free=lastFree;
+		score=lastScore;
+									//TODO: find a way to update the score label here
 	}
 	
 	
@@ -130,6 +145,18 @@ public class Board extends JPanel implements KeyListener {
 		free--;
 	}
 
+	private JLabel[][] deepCopyLabels(JLabel[][]m){
+		if(m==null)
+			return null;
+		JLabel[][]res=new JLabel[SIZE][SIZE];
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				res[i][j]=m[i][j];
+			}
+		}
+		return res;
+	}
+	
 	public boolean moveUp(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
@@ -301,7 +328,10 @@ public class Board extends JPanel implements KeyListener {
 	//		createTile(arr);
 		return moved;
 	}
-
+	public void updateGUI(){
+		toGUI();
+	}
+	
 	private void toGUI() {
 		//images=new ImageIcon[SIZE];
 		removeAll();
@@ -311,14 +341,11 @@ public class Board extends JPanel implements KeyListener {
 		labels =new JLabel[SIZE][SIZE];
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
-				//if(array[i][j]!=0){
-				image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
+				if(tilesSkin==2)
+					image=new ImageIcon(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
+				else
+					image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
-				//}
-			//	else {
-			//		labels[i][j]=new JLabel();
-			//	}
-				//labels[i][j].setBorder(BorderFactory.createLineBorder(Color.black,2));
 				this.add(labels[i][j]);
 				
 				
@@ -351,6 +378,10 @@ public class Board extends JPanel implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		boolean flag=false;
 		boolean moved=false;
+		int[][]last=deepCopyMat(array);
+		JLabel[][]lastLbl=deepCopyLabels(labels);
+		int lastFree=free;
+		int lastScore=score;
 		if(!gameOver){
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_UP:
@@ -372,14 +403,26 @@ public class Board extends JPanel implements KeyListener {
 		default:
 			break;
 		}
-		if(moved)
+		if(moved){
 			createTile(array);
+			lastMove=last;
+			if(lastLbl!=null)
+			lastTiles=lastLbl;
+			this.lastFree=lastFree;
+			this.lastScore=lastScore;
+		}
 		TopBar.lblScore.setText("score: "+score);
-		TopBar.lblTarget.setText("target: "+Math.pow(2, SIZE+7));
 		toGUI();
 		if(flag)
 			checkEndGame();
 		}
+	}
+	private void updateUndo(){
+		lastMove=deepCopyMat(array);
+		if(labels!=null)
+			lastTiles=deepCopyLabels(labels);
+		lastFree=free;
+		lastScore=score;
 	}
 	private void checkEndGame(){
 		gameOver();
@@ -392,17 +435,23 @@ public class Board extends JPanel implements KeyListener {
 			int[][]checkMoves=deepCopyMat(array);
 			if(!(moveUp(checkMoves)||moveDown(checkMoves)||moveLeft(checkMoves)||moveRight(checkMoves))){
 				gameOver=true;
-			String name=JOptionPane.showInputDialog(this, "Good Game, but its over now. Please enter your name");
-			
+				String table="";
+			String name=JOptionPane.showInputDialog(this, "Good Game, but it's over now. Please enter your name");
+			if(name!=null){
+				if(name.length()==0)
+					name="Player";
 			HighScoreManager hsm;
 			if(isMulti)
-			 hsm=new HighScoreManager("M"+SIZE);
-			else {
-				hsm=new HighScoreManager(""+SIZE);
-			}
+				table+="M";
+			 //hsm=new HighScoreManager("M"+SIZE);
+			//else {
+			//	hsm=new HighScoreManager(""+SIZE);
+			//}
+				table+=SIZE+"";
+				hsm=new HighScoreManager(table);
 			hsm.addScore(name, rscore);
-			
-			
+			HighscoresFrame hf=new HighscoresFrame(table);//show highscores
+			}
 			}
 			score=rscore;
 			free=rfree;
@@ -416,6 +465,8 @@ public class Board extends JPanel implements KeyListener {
 
 	}
 	private int[][] deepCopyMat(int[][]m){
+		if(m==null)
+			return null;
 		int[][]res=new int[SIZE][SIZE];
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {

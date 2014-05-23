@@ -11,14 +11,14 @@ public class HighScoreManager {
     private  final String HIGHSCORE_LOCATION	=System.getProperty("user.home") +  "/AppData/Roaming/2048Chad";
     private final String HIGHSCORE_FILE;
    
-    //Initialising an in and outputStream for working with the file
+    //Initializing an in and outputStream for working with the file
     ObjectOutputStream outputStream = null;
     ObjectInputStream inputStream = null;
 
     public HighScoreManager(String name) {
-        //initialising the scores-arraylist
+        //initializing the scores-arraylist
         scores = new ArrayList<Score>();
-        HIGHSCORE_FILE =HIGHSCORE_LOCATION + "\\scores"+name+".dat";
+        HIGHSCORE_FILE =HIGHSCORE_LOCATION + "/scores"+name+".dat";
         
         
         try{

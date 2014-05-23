@@ -34,6 +34,7 @@ public class Game extends JFrame implements ActionListener {
 	private JPanel gridPanel;
 	private JPanel secGridPanel;
 	private boolean multiMode=false;
+	private JFrame makeYourOwnFrame;
 	/**
 	 * Launch the application.
 	 */
@@ -69,6 +70,8 @@ public class Game extends JFrame implements ActionListener {
 		((TopBar)(topPanel)).getMultiToggle().addActionListener(this);
 		((TopBar)(topPanel)).getSkinCombo().addActionListener(this);
 		((TopBar)(topPanel)).getBtnHighscore().addActionListener(this);
+		((TopBar)(topPanel)).getUndoBtn().addActionListener(this);
+		((TopBar)(topPanel)).getChangeBtn().addActionListener(this);
 		contentPane.add(topPanel,BorderLayout.NORTH);
 		
 		gridPanel=new Board(4,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
@@ -80,8 +83,10 @@ public class Game extends JFrame implements ActionListener {
 		addKeyListener((KeyListener)secGridPanel);
 		}
 		
+		((TopBar)topPanel).setTarget(((Board)gridPanel).getboardSize());
 		
-		//this.setResizable(false);
+		
+		this.setResizable(false);
 		this.setVisible(true);
 	
 	}
@@ -124,6 +129,16 @@ public class Game extends JFrame implements ActionListener {
 				
 
 			}
+			else if(button.getText().equals("Undo")){
+				((Board)gridPanel).Undo();
+				if(secGridPanel instanceof JPanel){
+					((Board)secGridPanel).Undo();
+				}
+			}
+			else if(button.getText().equals("Change Tiles")){
+					makeYourOwnFrame=new MakeYourOwnFrame();
+					((Board)gridPanel).updateGUI();
+				}
 		}
 		//-------------------
 		
@@ -139,6 +154,7 @@ public class Game extends JFrame implements ActionListener {
 			((TopBar)topPanel).lblScore.setText("score: 0");
 			this.add(gridPanel);
 			changeSize((int)comboBox.getSelectedItem());
+			((TopBar)topPanel).setTarget(((Board)gridPanel).getboardSize());
 			this.contentPane.revalidate();
 			this.contentPane.repaint();
 			}//---------------
@@ -150,7 +166,10 @@ public class Game extends JFrame implements ActionListener {
 				if(secGridPanel instanceof JPanel){
 					((Board)secGridPanel).setSkin(comboBox.getSelectedIndex());
 				}
-				this.contentPane.revalidate();
+				if(comboBox.getSelectedIndex()==2)
+					((TopBar)(topPanel)).getChangeBtn().setVisible(true);
+				else
+					((TopBar)(topPanel)).getChangeBtn().setVisible(false);
 				this.contentPane.repaint();
 			}
 				//----------------------
