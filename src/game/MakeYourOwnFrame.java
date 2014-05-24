@@ -18,6 +18,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class MakeYourOwnFrame extends JFrame implements MouseListener{
 
@@ -80,6 +85,23 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 		this.setVisible(true);
 	}
 
+	private static void copyFileUsingStream(File source, File dest) throws IOException {
+	    InputStream is = null;
+	    OutputStream os = null;
+	    try {
+	        is = new FileInputStream(source);
+	        os = new FileOutputStream(dest);
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	    } finally {
+	        is.close();
+	        os.close();
+	    }
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource() instanceof JButton){
@@ -92,7 +114,15 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 			}
 			else if(button.getText().equals("Save")){
 				if(toSaveVal==chooser.APPROVE_OPTION){
-					File file = chooser.getSelectedFile();
+					File toCopy=chooser.getSelectedFile();
+					File file=new File(ICONS_LOCATION+"/tileTemp.Png");
+					try {
+						copyFileUsingStream(toCopy, file);
+					} catch (Exception e2) {
+						System.err.println("error copying the file");
+					}
+					
+					
 					int val=-1;
 					try{
 						val=Integer.parseInt(txtValue.getText());

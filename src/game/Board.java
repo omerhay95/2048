@@ -8,11 +8,13 @@ import javax.swing.border.EmptyBorder;
 import org.w3c.dom.css.RGBColor;
 
 import HighScores.HighScoreManager;
-
+import sun.audio.*;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class Board extends JPanel implements KeyListener {
 	/**
@@ -95,7 +97,9 @@ public class Board extends JPanel implements KeyListener {
 			toGUI();
 		free=lastFree;
 		score=lastScore;
-									//TODO: find a way to update the score label here
+		TopBar.lblScore.setText("score: "+score);
+		if(gameOver)
+			gameOver=false;
 	}
 	
 	
@@ -404,6 +408,7 @@ public class Board extends JPanel implements KeyListener {
 			break;
 		}
 		if(moved){
+			playSound("move.wav");
 			createTile(array);
 			lastMove=last;
 			if(lastLbl!=null)
@@ -460,6 +465,7 @@ public class Board extends JPanel implements KeyListener {
 	private void win(){
 		if(win&&!won){
 			won=true;
+			playSound("victory.wav");
 			JOptionPane.showMessageDialog(this, "Congratulations! You Have Won The Game!");
 		}
 
@@ -477,5 +483,21 @@ public class Board extends JPanel implements KeyListener {
 //			res[i]=m[i].clone();
 //		}
 		return res;
+	}
+	private void playSound(String sound){
+		// open the sound file as a Java input stream
+		try{
+	    String gongFile = "./src/Sounds/"+sound;
+	    InputStream in = new FileInputStream(gongFile);
+
+	    // create an audiostream from the inputstream
+	    AudioStream audioStream = new AudioStream(in);
+
+	    // play the audio clip with the audioplayer class
+	    AudioPlayer.player.start(audioStream);
+		}
+		catch(Exception e){
+			System.out.println("prob");
+		}
 	}
 }

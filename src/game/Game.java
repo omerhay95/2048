@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -25,6 +27,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.IconView;
 import javax.swing.SwingConstants;
 
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 import HighScores.HighScoreManager;
 
 public class Game extends JFrame implements ActionListener {
@@ -56,6 +60,7 @@ public class Game extends JFrame implements ActionListener {
 	 */
 	public Game() {
 		super("2048");
+		//playSound("alrighty.wav");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(250,100,580,650);
 		//setBounds(100,100,402,464);   SIZE 3
@@ -138,6 +143,8 @@ public class Game extends JFrame implements ActionListener {
 			else if(button.getText().equals("Change Tiles")){
 					makeYourOwnFrame=new MakeYourOwnFrame();
 					((Board)gridPanel).updateGUI();
+					if(secGridPanel instanceof JPanel)
+					((Board)secGridPanel).updateGUI();
 				}
 		}
 		//-------------------
@@ -166,7 +173,9 @@ public class Game extends JFrame implements ActionListener {
 				if(secGridPanel instanceof JPanel){
 					((Board)secGridPanel).setSkin(comboBox.getSelectedIndex());
 				}
-				if(comboBox.getSelectedIndex()==2)
+				if(comboBox.getSelectedIndex()==1)
+					playSound("Chad Gadya.wav");
+				else if(comboBox.getSelectedIndex()==2)
 					((TopBar)(topPanel)).getChangeBtn().setVisible(true);
 				else
 					((TopBar)(topPanel)).getChangeBtn().setVisible(false);
@@ -193,7 +202,6 @@ public class Game extends JFrame implements ActionListener {
 			changeSize((int)((TopBar)topPanel).getGridSize().getSelectedItem());
 		}
 		//--------------------
-		
 	}
 	
 	private void changeSize(int grid){
@@ -272,6 +280,22 @@ public class Game extends JFrame implements ActionListener {
 		this.contentPane.revalidate();
 		this.contentPane.repaint();
 
+	}
+	private void playSound(String sound){
+		// open the sound file as a Java input stream
+		try{
+	    String gongFile = "./src/Sounds/"+sound;
+	    InputStream in = new FileInputStream(gongFile);
+
+	    // create an audiostream from the inputstream
+	    AudioStream audioStream = new AudioStream(in);
+
+	    // play the audio clip with the audioplayer class
+	    AudioPlayer.player.start(audioStream);
+		}
+		catch(Exception e){
+			System.out.println("problem playing audio file"+sound);
+		}
 	}
 	
 }
