@@ -1,5 +1,6 @@
 package game;
 
+import javax.media.jai.Histogram;
 import javax.swing.*;
 
 import java.awt.AlphaComposite;
@@ -25,11 +26,14 @@ public class TopBar extends JPanel{
 	 private JButton btnHighscores;
 	 private JPanel panel;
 	 private JPanel panelCenter;
+	 private JPanel panelSouth;
 	 public static JLabel lblTarget;
 	 private JSeparator separator;
 	 private JSeparator separator_1;
 	 private JButton btnUndo;
 	 private JButton btnChangeTiles;
+	 private JToggleButton tglbtnDoubleTrouble;
+	 private JButton btnHelp;
 	/**
 	 * Create the panel.
 	 */
@@ -39,8 +43,15 @@ public class TopBar extends JPanel{
 		panel = new JPanel();
 		add(panel, BorderLayout.NORTH);
 		panelCenter = new JPanel();
+		//panelCenter.setLayout(new FlowLayout());
+		panelSouth = new JPanel();
+		panelSouth.setLayout(new FlowLayout());
 		add(panelCenter, BorderLayout.CENTER);
-	
+		panelCenter.setLayout(new FlowLayout());
+		tglbtnDoubleTrouble = new JToggleButton("Double Trouble");
+		tglbtnDoubleTrouble.setFocusable(false);
+		panelCenter.add(tglbtnDoubleTrouble);
+		
 		tglMulti = new JToggleButton("Dual");
 		tglMulti.setFocusable(false);
 		panelCenter.add(tglMulti);
@@ -56,6 +67,10 @@ public class TopBar extends JPanel{
 		comboBox_grid.setName("comboBox_grid");
 		panelCenter.add(comboBox_grid);
 		
+		btnHelp = new JButton("Help");
+		btnHelp.setFocusable(false);
+		panel.add(btnHelp);
+		
 		lblTarget = new JLabel("Target");
 		lblTarget.setHorizontalAlignment(SwingConstants.LEFT);
 		panel.add(lblTarget);
@@ -70,30 +85,28 @@ public class TopBar extends JPanel{
 		panel.add(lblScore);
 		restart=new JButton("Restart");
 		restart.setFocusable(false);
-		//restart.setPreferredSize(new Dimension(50, 50));
 		panelCenter.add(restart);
-		
 		comboBox_skin = new JComboBox();
 		comboBox_skin.setName("comboBox_skin");
 		comboBox_skin.setModel(new DefaultComboBoxModel(new String[] {"Classic", "Chad Gadya", "Make Your Own"}));
 		comboBox_skin.setFocusable(false);
-		panelCenter.add(comboBox_skin);
+		panelSouth.add(comboBox_skin,BorderLayout.SOUTH);
 		
 		btnHighscores = new JButton("Highscores");
 		btnHighscores.setHorizontalAlignment(SwingConstants.RIGHT);
 		btnHighscores.setFocusable(false);
 		panel.add(btnHighscores);
 		
-		btnUndo = new JButton("Undo");
-		btnUndo.setFocusable(false);
-		btnUndo.setHorizontalAlignment(SwingConstants.RIGHT);
-		panel.add(btnUndo);
-		
 		btnChangeTiles = new JButton("Change Tiles");
 		btnChangeTiles.setFocusable(false);
-		panel.add(btnChangeTiles);
+		panelSouth.add(btnChangeTiles,BorderLayout.SOUTH);
 		btnChangeTiles.setVisible(false);
+		this.add(panelSouth, BorderLayout.SOUTH);
 		
+		btnUndo = new JButton("Undo");
+		panelSouth.add(btnUndo);
+		btnUndo.setFocusable(false);
+		btnUndo.setHorizontalAlignment(SwingConstants.RIGHT);
 
 	}
 	public void setTarget(int size){
@@ -128,6 +141,12 @@ public void setToggle(){
 }
 public JButton getUndoBtn(){
 	return btnUndo;
+}
+public JButton getHelpbtn(){
+	return btnHelp;
+}
+public JToggleButton getTglDoubleTrouble(){
+	return tglbtnDoubleTrouble;
 }
 	 public static BufferedImage resizeImage(final Image image, int width, int height) {
 	        final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

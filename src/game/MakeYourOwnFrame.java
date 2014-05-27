@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class MakeYourOwnFrame extends JFrame implements MouseListener{
 
@@ -34,6 +36,7 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 	private JButton btnSave;
 	private int toSaveVal=chooser.CANCEL_OPTION;
 	private  final String ICONS_LOCATION	=System.getProperty("user.home") +"/AppData/Roaming/Make Your Own";
+	private final String DEFAULT_LOCATION="./src/Classic/tile";
 	
 	/**
 	 * Launch the application.
@@ -42,8 +45,8 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MakeYourOwnFrame frame = new MakeYourOwnFrame();
-					frame.setVisible(true);
+				//	MakeYourOwnFrame frame = new MakeYourOwnFrame();
+				//	frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -54,7 +57,12 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 	/**
 	 * Create the frame.
 	 */
-	public MakeYourOwnFrame() {
+	
+	private Board board;
+	private Board secBoard;
+	public MakeYourOwnFrame(Board board,Board secBoard) {
+		this.board = board;
+		this.secBoard=secBoard;
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -83,6 +91,7 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 		topPane.add(btnSave);
 		
 		this.setVisible(true);
+		//addMissingFiles();
 	}
 
 	private static void copyFileUsingStream(File source, File dest) throws IOException {
@@ -140,7 +149,11 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 					            f.renameTo(new File(ICONS_LOCATION+"/tile"+val+".Png"));
 					            f.createNewFile();
 					            JOptionPane.showMessageDialog(this, "The Tile Was Successfully Saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-					            txtValue.setText(ICONS_LOCATION+"/tile"+val+".Png");
+					  //          txtValue.setText(ICONS_LOCATION+"/tile"+val+".Png");
+					            board.reload();
+					            if(secBoard instanceof JPanel)
+					            	secBoard.reload();
+			//		           reloadClass();
 						 }
 					    	catch(Exception exc){
 					    		
@@ -152,6 +165,23 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 		
 	}
 
+	private void reloadClass(){
+		Class<?> myClass=Board.class;
+	    URL[] urls={ myClass.getProtectionDomain().getCodeSource().getLocation() };
+	    ClassLoader delegateParent = myClass.getClassLoader().getParent();
+	    try(URLClassLoader cl=new URLClassLoader(urls, delegateParent)) {
+	      Class<?> reloaded=cl.loadClass(myClass.getName());
+	      System.out.printf("reloaded my class: Class@%x%n", reloaded.hashCode());
+	      System.out.println("Different classes: "+(myClass!=reloaded));
+	    }
+	    catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+
+	
+	
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -174,6 +204,48 @@ public class MakeYourOwnFrame extends JFrame implements MouseListener{
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	private void addMissingFiles(){
+		int val=0;
+		// empty tile
+		File file=new File(ICONS_LOCATION+"/tile"+val+".Png");
+		if(!file.exists()){
+			try{//save the image
+				file=new File(DEFAULT_LOCATION+val+".png");
+	    		File f = new File(ICONS_LOCATION);
+	            f.mkdirs();
+	            f.createNewFile();
+	            f = file;
+	            f.renameTo(new File(ICONS_LOCATION+"/tile"+val+".Png"));
+	            f.createNewFile();
+	            JOptionPane.showMessageDialog(this, "The Tile"+val+ "Was Successfully Saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+		 }
+catch(Exception exc){
+	    		
+	    	}
+		}
+			//rest of the tiles
+		for(int i=1;i<=15;i++){
+			val=(int)Math.pow(2, i);
+			file=new File(ICONS_LOCATION+"/tile"+val+".Png");
+		if(!file.exists()){
+			try{//save the image
+				file=new File(DEFAULT_LOCATION+val+".png");
+	    		File f = new File(ICONS_LOCATION);
+	            f.mkdirs();
+	            f.createNewFile();
+	            f = file;
+	            f.renameTo(new File(ICONS_LOCATION+"/tile"+val+".Png"));
+	            f.createNewFile();
+	            JOptionPane.showMessageDialog(this, "The Tile"+val+ "Was Successfully Saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+		 }
+	    	catch(Exception exc){
+	    		
+	    	}
+			
+		}
+		}
+        board.reload();
 	}
 
 }

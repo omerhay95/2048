@@ -11,8 +11,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -62,7 +66,7 @@ public class Game extends JFrame implements ActionListener {
 		super("2048");
 		//playSound("alrighty.wav");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(250,100,580,650);
+		setBounds(250,100,580,670);
 		//setBounds(100,100,402,464);   SIZE 3
 		//setBounds(100,100,626,686);   SIZE 5
 		contentPane = new JPanel();
@@ -77,6 +81,8 @@ public class Game extends JFrame implements ActionListener {
 		((TopBar)(topPanel)).getBtnHighscore().addActionListener(this);
 		((TopBar)(topPanel)).getUndoBtn().addActionListener(this);
 		((TopBar)(topPanel)).getChangeBtn().addActionListener(this);
+		((TopBar)(topPanel)).getTglDoubleTrouble().addActionListener(this);
+		((TopBar)(topPanel)).getHelpbtn().addActionListener(this);
 		contentPane.add(topPanel,BorderLayout.NORTH);
 		
 		gridPanel=new Board(4,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
@@ -141,18 +147,33 @@ public class Game extends JFrame implements ActionListener {
 				}
 			}
 			else if(button.getText().equals("Change Tiles")){
-					makeYourOwnFrame=new MakeYourOwnFrame();
-					((Board)gridPanel).updateGUI();
+					makeYourOwnFrame=new MakeYourOwnFrame((Board)gridPanel,(Board)secGridPanel);
+					((Board)gridPanel).setFlush(true);
 					if(secGridPanel instanceof JPanel)
-					((Board)secGridPanel).updateGUI();
+					((Board)secGridPanel).setFlush(true);
 				}
+			
+			else if(button.getText().equals("Help")){
+				String help ="Help:\n"+
+			"You may choose the tile type you wish to play with:\nClassic: The classic tiles.\nChad Gadya: Take part of the holiday festivities with these tiles.\nMake Your Own: Dynamically choose your own tiles (classic tiles are the default).\n\n"+
+						"You may also choose the board size (ranging from 3 to 7), each size has a different highscore table.\n"+
+						"Highscores: Shows the top ten high scores of a game mode.\n"+
+						"Double Trouble: Double the tiles! Double the fun! (creates two tiles each turn instead of one).\n"+
+						"Dual: Play on two boards in one game (only possible on sizes 3x3 and 4x4).\n"+
+						"Restart: Restarts the game (be careful not to lose your score!).\n"+
+						"Undo: Undo your last move.";
+				JOptionPane.showMessageDialog(this, help, "Help", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		//-------------------
+		
+		
 		
 		if(e.getSource()instanceof JComboBox){
 			JComboBox comboBox=(JComboBox)(e.getSource());
 			//changing grid size
 			if(comboBox.getName()=="comboBox_grid"){
+				int num=((Board)gridPanel).getNumOfTilesCreated();
 			this.removeKeyListener((KeyListener)gridPanel);
 			gridPanel.removeAll();
 			this.contentPane.remove(gridPanel);
@@ -160,7 +181,7 @@ public class Game extends JFrame implements ActionListener {
 			addKeyListener((KeyListener)gridPanel);
 			((TopBar)topPanel).lblScore.setText("score: 0");
 			this.add(gridPanel);
-			changeSize((int)comboBox.getSelectedItem());
+			changeSize((int)comboBox.getSelectedItem(),num);
 			((TopBar)topPanel).setTarget(((Board)gridPanel).getboardSize());
 			this.contentPane.revalidate();
 			this.contentPane.repaint();
@@ -173,12 +194,22 @@ public class Game extends JFrame implements ActionListener {
 				if(secGridPanel instanceof JPanel){
 					((Board)secGridPanel).setSkin(comboBox.getSelectedIndex());
 				}
-				if(comboBox.getSelectedIndex()==1)
+				if(comboBox.getSelectedIndex()==1){
 					playSound("Chad Gadya.wav");
-				else if(comboBox.getSelectedIndex()==2)
-					((TopBar)(topPanel)).getChangeBtn().setVisible(true);
-				else
 					((TopBar)(topPanel)).getChangeBtn().setVisible(false);
+				}
+				else if(comboBox.getSelectedIndex()==2){
+					//addMissingFiles();
+					((Board)gridPanel).reload();
+					if(((Board)secGridPanel) instanceof JPanel)
+						((Board)secGridPanel).reload();
+					((TopBar)(topPanel)).getChangeBtn().setVisible(true);
+					((TopBar)(topPanel)).getChangeBtn().setVisible(true);
+				}
+				else{
+					((TopBar)(topPanel)).getChangeBtn().setVisible(false);
+					((TopBar)(topPanel)).getChangeBtn().setVisible(false);
+				}
 				this.contentPane.repaint();
 			}
 				//----------------------
@@ -187,45 +218,62 @@ public class Game extends JFrame implements ActionListener {
 		//--------------------
 		//Multi Mode
 		if(e.getSource() instanceof JToggleButton){
-			JToggleButton multi=(JToggleButton)(e.getSource());
+			JToggleButton toggle=(JToggleButton)(e.getSource());
+			if(toggle.getText().equals("Double Trouble")){
+				int num;
+				if(toggle.isSelected())
+					num=2;
+				else 
+					num=1;
+				((Board)gridPanel).setNumOfTilesCreated(num);
+				if(secGridPanel instanceof JPanel)
+					((Board)secGridPanel).setNumOfTilesCreated(num);
+			}
+		else{	//Multi mode toggle
 			
+			int num=((Board)gridPanel).getNumOfTilesCreated();
 			restart();
 			
-			if(multi.isSelected()){
+			if(toggle.isSelected()){
 				multiMode=true;
+				((Board)gridPanel).setNumOfTilesCreated(num);
 			}
 			else 
 				multiMode=false;
 			((Board)gridPanel).setMulti(multiMode);
-			if(secGridPanel instanceof Board)
+			if(secGridPanel instanceof Board){
 				((Board)secGridPanel).setMulti(multiMode);
-			changeSize((int)((TopBar)topPanel).getGridSize().getSelectedItem());
+				((Board)secGridPanel).setNumOfTilesCreated(num);
+			}
+			changeSize((int)((TopBar)topPanel).getGridSize().getSelectedItem(),num);
+		}
 		}
 		//--------------------
 	}
 	
-	private void changeSize(int grid){
+	private void changeSize(int grid,int tilesNum){
 		int height=0,width=0;
 		switch (grid) {
 		case 3:
-			 width=402;
-			 height=464; 
+			 width=422;//402
+			 height=523;//464
+			// ((TopBar)topPanel).add(((TopBar)topPanel).getChangeBtn(),BorderLayout.SOUTH);
 			break;
 		case 4:
 			width=580;
-			 height=650; 
+			 height=670; 
 			break;
 		case 5:
 			width=626;
-			 height=686; 
+			 height=706; 
 			break;
-		case 6:							//to change
+		case 6:					
 			width=765;
-			 height=800; 
+			 height=820; 
 			break;
-		case 7:							//to change
+		case 7:							
 			width=850;
-			 height=810; 
+			 height=820; 
 			break;
 		default:
 			break;
@@ -249,14 +297,17 @@ public class Game extends JFrame implements ActionListener {
 			if(grid==5)
 				width+=60;
 			secGridPanel=new Board(grid,(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
+			((Board)secGridPanel).setNumOfTilesCreated(tilesNum);
 			addKeyListener((KeyListener)secGridPanel);
 			contentPane.add(secGridPanel,BorderLayout.WEST);
 		}
+		((Board)gridPanel).setNumOfTilesCreated(tilesNum);
 		setBounds(this.getX(),this.getY(),width,height);
 	}
 
 	
 	private void restart(){
+		int numofTiles =((Board)gridPanel).getNumOfTilesCreated();
 		((Board)gridPanel).setGameOver(false);
 		this.removeKeyListener((KeyListener)gridPanel);
 		gridPanel.removeAll();
@@ -266,7 +317,7 @@ public class Game extends JFrame implements ActionListener {
 		((TopBar)topPanel).lblScore.setText("score: 0");
 		//((TopBar)topPanel).lblScore.setText(getContentPane().getHeight()+" wid "+getContentPane().getWidth());
 		this.add(gridPanel,BorderLayout.CENTER);
-		
+		((Board)gridPanel).setNumOfTilesCreated(numofTiles);
 		if(secGridPanel instanceof JPanel){
 			this.removeKeyListener((KeyListener)secGridPanel);
 			secGridPanel.removeAll();
@@ -274,6 +325,7 @@ public class Game extends JFrame implements ActionListener {
 			secGridPanel=new Board((int)((TopBar)topPanel).getGridSize().getSelectedItem(),(int)(((TopBar)topPanel).getSkinCombo().getSelectedIndex()));
 			addKeyListener((KeyListener)secGridPanel);
 			this.add(secGridPanel,BorderLayout.WEST);
+			((Board)secGridPanel).setNumOfTilesCreated(numofTiles);
 			
 		}
 		
@@ -297,5 +349,7 @@ public class Game extends JFrame implements ActionListener {
 			System.out.println("problem playing audio file"+sound);
 		}
 	}
+	
+	
 	
 }

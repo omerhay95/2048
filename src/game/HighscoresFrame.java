@@ -42,6 +42,7 @@ private JTextArea content;
 	 * Create the frame.
 	 */
 	public HighscoresFrame() {
+		setTitle("Top Ten");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();

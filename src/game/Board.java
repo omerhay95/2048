@@ -9,12 +9,16 @@ import org.w3c.dom.css.RGBColor;
 
 import HighScores.HighScoreManager;
 import sun.audio.*;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class Board extends JPanel implements KeyListener {
 	/**
@@ -33,6 +37,8 @@ public class Board extends JPanel implements KeyListener {
 	private boolean won=false;
 	private static boolean gameOver=false;
 	private static boolean isMulti=false;
+	private boolean flush=false;
+	private int newTiles=1;
 	int tilesSkin;
 	String[]skins;
 	/**
@@ -83,13 +89,23 @@ public class Board extends JPanel implements KeyListener {
 	public int GetScore(){
 		return score;
 	}
+	public void setFlush(boolean newFlush){
+		this.flush=newFlush;
+	}
 	public void setSkin(int newSkin){
 		if(newSkin<skins.length){
 			tilesSkin=newSkin;
 			toGUI();
 		}
 	}
+	public void setNumOfTilesCreated(int num){
+		newTiles=num;
+	}
+	public int getNumOfTilesCreated(){
+		return newTiles;
+	}
 	public void Undo(){
+		if(!gameOver){
 		array=deepCopyMat(lastMove);
 		if(lastTiles!=null)
 			labels=deepCopyLabels(lastTiles);
@@ -100,6 +116,7 @@ public class Board extends JPanel implements KeyListener {
 		TopBar.lblScore.setText("score: "+score);
 		if(gameOver)
 			gameOver=false;
+	}
 	}
 	
 	
@@ -161,7 +178,7 @@ public class Board extends JPanel implements KeyListener {
 		return res;
 	}
 	
-	public boolean moveUp(int[][]arr) {
+	private boolean moveUp(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int j = 0; j < SIZE; j++) {
@@ -207,7 +224,7 @@ public class Board extends JPanel implements KeyListener {
 		return moved;
 	}
 	
-	public boolean moveDown(int[][]arr) {
+	private boolean moveDown(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int j = 0; j < SIZE; j++) {
@@ -249,7 +266,7 @@ public class Board extends JPanel implements KeyListener {
 		return moved;
 	}
 
-	public boolean moveRight(int[][]arr) {
+	private boolean moveRight(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int i = 0; i < SIZE; i++) {
@@ -291,7 +308,7 @@ public class Board extends JPanel implements KeyListener {
 		return moved;
 	}
 
-	public boolean moveLeft(int[][]arr) {
+	private boolean moveLeft(int[][]arr) {
 		boolean[] isMerged;
 		boolean moved = false;
 		for (int i = 0; i < SIZE; i++) {
@@ -337,17 +354,72 @@ public class Board extends JPanel implements KeyListener {
 	}
 	
 	private void toGUI() {
+		
+		//reloadClass();
+		
 		//images=new ImageIcon[SIZE];
 		removeAll();
 		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
+		
+		
 		
 		ImageIcon image;
 		labels =new JLabel[SIZE][SIZE];
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
-				if(tilesSkin==2)
+				if(tilesSkin==2){
+						File file=new File(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
+						if(file.exists()){
+						image=new ImageIcon(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
+						}
+						else{
+							image =new ImageIcon("./src/Classic/tile"+array[i][j]+".png");
+						}
+//						image.getImage().flush();
+//					image=new ImageIcon(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
+					if(flush){
+						image.getImage().flush();
+					}
+				}else
+					image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
+				labels[i][j]=new JLabel(image);
+				this.add(labels[i][j]);
+				
+				
+			}
+		}
+		if(flush){
+			flush=false;
+		}
+		this.revalidate();
+		repaint();
+	
+	}
+
+public void reload() {
+		
+		//reloadClass();
+		
+		//images=new ImageIcon[SIZE];
+		removeAll();
+		setLayout(new GridLayout(SIZE, SIZE, 10, 10));
+		
+		
+		
+		ImageIcon image;
+		labels =new JLabel[SIZE][SIZE];
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				if(tilesSkin==2){
+					File file=new File(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
+					if(file.exists()){
 					image=new ImageIcon(System.getProperty("user.home") +"/AppData/Roaming/Make Your Own"+"/tile"+array[i][j]+".png");
-				else
+					}
+					else{
+						image =new ImageIcon("./src/Classic/tile"+array[i][j]+".png");
+					}
+					image.getImage().flush();
+				}else
 					image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
 				this.add(labels[i][j]);
@@ -359,9 +431,20 @@ public class Board extends JPanel implements KeyListener {
 		repaint();
 	
 	}
-
 	
-	
+	private void reloadClass(){
+		Class<?> myClass=Board.class;
+	    URL[] urls={ myClass.getProtectionDomain().getCodeSource().getLocation() };
+	    ClassLoader delegateParent = myClass.getClassLoader().getParent();
+	    try(URLClassLoader cl=new URLClassLoader(urls, delegateParent)) {
+	      Class<?> reloaded=cl.loadClass(myClass.getName());
+	      System.out.printf("reloaded my class: Class@%x%n", reloaded.hashCode());
+	      System.out.println("Different classes: "+(myClass!=reloaded));
+	    }
+	    catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	
 
 	@Override
@@ -409,7 +492,9 @@ public class Board extends JPanel implements KeyListener {
 		}
 		if(moved){
 			playSound("move.wav");
-			createTile(array);
+			for (int i = 0; i < newTiles; i++) 
+				if(free>0)
+				createTile(array);
 			lastMove=last;
 			if(lastLbl!=null)
 			lastTiles=lastLbl;
