@@ -326,6 +326,9 @@ public class Game extends JFrame implements ActionListener {
 			addKeyListener((KeyListener)secGridPanel);
 			this.add(secGridPanel,BorderLayout.WEST);
 			((Board)secGridPanel).setNumOfTilesCreated(numofTiles);
+			((Board)gridPanel).reload();
+			if(secGridPanel !=null)
+				((Board)secGridPanel).reload();
 			
 		}
 		

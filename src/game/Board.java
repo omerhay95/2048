@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.w3c.dom.css.RGBColor;
 
+import com.sun.xml.internal.ws.api.ResourceLoader;
+
 import HighScores.HighScoreManager;
 import sun.audio.*;
 
@@ -380,7 +382,8 @@ public class Board extends JPanel implements KeyListener {
 					if(flush){
 						image.getImage().flush();
 					}
-				}else
+				}else{
+					
 					image =new ImageIcon("./src/"+skins[tilesSkin] +"/tile"+array[i][j]+".png");
 				labels[i][j]=new JLabel(image);
 				this.add(labels[i][j]);
@@ -394,6 +397,7 @@ public class Board extends JPanel implements KeyListener {
 		this.revalidate();
 		repaint();
 	
+	}
 	}
 
 public void reload() {
@@ -431,6 +435,7 @@ public void reload() {
 		repaint();
 	
 	}
+	
 	
 	private void reloadClass(){
 		Class<?> myClass=Board.class;
@@ -584,5 +589,15 @@ public void reload() {
 		catch(Exception e){
 			System.out.println("prob");
 		}
+	}
+	
+	private InputStream load(String path){
+		InputStream input=ResourceLoader.class.getResourceAsStream(path);
+		
+		if(input==null){
+			input=ResourceLoader.class.getResourceAsStream("/"+path);
+		}
+		
+		return input;
 	}
 }
